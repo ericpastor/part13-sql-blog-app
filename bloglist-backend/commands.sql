@@ -1,8 +1,8 @@
 
-CREATE TABLE blogs (
+CREATE TABLE blogs(
     id SERIAL PRIMARY KEY,
-    author text
+    author text,
     url text NOT NULL,
     title text NOT NULL,
-    likes integer default 0,
-)
+    likes integer default 0
+);
