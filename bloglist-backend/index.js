@@ -2,7 +2,10 @@ require("dotenv").config()
 const { Sequelize, Model, DataTypes } = require("sequelize")
 const express = require("express")
 const app = express()
+const cors = require("cors")
+
 app.use(express.json())
+app.use(cors())
 
 const sequelize = new Sequelize(process.env.DATABASE_URL)
 
@@ -18,14 +21,14 @@ Blog.init(
       type: DataTypes.TEXT,
     },
     url: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     title: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
-    url: {
+    likes: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
@@ -38,9 +41,22 @@ Blog.init(
   }
 )
 
+Blog.sync()
+
 app.get("/api/blogs", async (req, res) => {
   const blogs = await Blog.findAll()
+  console.log(JSON.stringify(blogs, null, 2))
   res.json(blogs)
+})
+
+app.get("/api/blogs/:id", async (req, res) => {
+  const blog = await Blog.findByPk(req.params.id)
+  if (blog) {
+    console.log(blog.toJSON())
+    res.json(blog)
+  } else {
+    res.status(404).end()
+  }
 })
 
 app.post("/api/blogs", async (req, res) => {
@@ -50,6 +66,14 @@ app.post("/api/blogs", async (req, res) => {
   } catch (error) {
     return res.status(400).json({ error })
   }
+})
+
+app.delete("/api/blogs/:id", async (req, res) => {
+  const blog = await Blog.findByPk(req.params.id)
+  if (blog) {
+    await blog.destroy()
+  }
+  res.status(204).end()
 })
 
 const PORT = process.env.PORT || 3001
