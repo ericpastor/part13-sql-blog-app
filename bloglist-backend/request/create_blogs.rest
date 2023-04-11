@@ -1,10 +1,10 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVyaWNwYXN0QGVyY2dkZy5kc2hmIiwiaWQiOjEsImlhdCI6MTY4MTIwMTgwN30.-Uoj_SXJYp6kGUbc2YtDJDjnm2GvH9-TSp-2rBhDNA8
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImVyaWNwYXN0QGVyY2dkZy5kc2hmIiwiaWQiOjEsImlhdCI6MTY4MTIwODU3M30.dONOaOA35d8gTEsYlamGPAKthg7bfdEJugYrvcp5wE0
  
  {   
-    "title": "Litle more blogs 8",
-    "author": "do it 8",
+    "title": "More blogs 8",
+    "author": "Er Testing",
     "url": "https://creating8/"
   }
 
