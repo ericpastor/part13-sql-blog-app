@@ -1,4 +1,4 @@
-const { Blog } = require("../models")
+const { Blog, ReadingList } = require("../models")
 const { SECRET } = require("./config")
 const jwt = require("jsonwebtoken")
 
@@ -29,6 +29,11 @@ const blogFinder = async (req, res, next) => {
   next()
 }
 
+const readingListFinder = async (req, res, next) => {
+  req.readinglist = await ReadingList.findByPk(req.params.id)
+  next()
+}
+
 const tokenExtractor = (req, res, next) => {
   const authorization = req.get("authorization")
   if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
@@ -48,4 +53,5 @@ module.exports = {
   errorHandler,
   blogFinder,
   tokenExtractor,
+  readingListFinder,
 }
