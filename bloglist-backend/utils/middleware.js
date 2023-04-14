@@ -1,4 +1,5 @@
-const { Blog, ReadingList } = require("../models")
+const { Blog, ReadingList, User } = require("../models")
+const Session = require("../models/session")
 const { SECRET } = require("./config")
 const jwt = require("jsonwebtoken")
 
@@ -48,10 +49,30 @@ const tokenExtractor = (req, res, next) => {
   next()
 }
 
+const activeSession = async (req, res, next) => {
+  const isActive = await Session.findOne({
+    where: {
+      userId: req.decodedToken.id,
+    },
+    include: {
+      model: User,
+      attributes: ["disabled"],
+    },
+  })
+  !isActive
+    ? res.status(401).json({ error: "Session is not active. Log in" })
+    : next()
+
+  isActive.user.disabled = true
+    ? res.status(409).json({ error: "User disabled" })
+    : next()
+}
+
 module.exports = {
   unknownEndpoint,
   errorHandler,
   blogFinder,
   tokenExtractor,
   readingListFinder,
+  activeSession,
 }

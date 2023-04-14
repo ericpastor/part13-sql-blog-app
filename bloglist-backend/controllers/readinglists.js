@@ -3,6 +3,7 @@ const {
   readingListFinder,
   tokenExtractor,
   blogFinder,
+  activeSession,
 } = require("../utils/middleware")
 const router = require("express").Router()
 
@@ -33,20 +34,26 @@ router.post("/", async (req, res) => {
   return res.json(readinglist)
 })
 
-router.put("/:id", tokenExtractor, readingListFinder, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id)
-  if (req.readinglist.userId !== user.id) {
-    return res.status(401).json({
-      error: "Only the creator can delete a blog",
-    })
+router.put(
+  "/:id",
+  tokenExtractor,
+  activeSession,
+  readingListFinder,
+  async (req, res) => {
+    const user = await User.findByPk(req.decodedToken.id)
+    if (req.readinglist.userId !== user.id) {
+      return res.status(401).json({
+        error: "Only the creator can delete a blog",
+      })
+    }
+    if (req.readinglist) {
+      req.readinglist.blog_read = req.body.blog_read
+      await req.readinglist.save()
+      res.json(req.readingist)
+    } else {
+      res.status(404).end()
+    }
   }
-  if (req.readinglist) {
-    req.readinglist.blog_read = req.body.blog_read
-    await req.readinglist.save()
-    res.json(req.readingist)
-  } else {
-    res.status(404).end()
-  }
-})
+)
 
 module.exports = router

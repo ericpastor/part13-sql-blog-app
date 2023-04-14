@@ -2,7 +2,11 @@ const router = require("express").Router()
 
 const { Op } = require("sequelize")
 const { Blog, User } = require("../models")
-const { blogFinder, tokenExtractor } = require("../utils/middleware")
+const {
+  blogFinder,
+  tokenExtractor,
+  activeSession,
+} = require("../utils/middleware")
 
 router.get("/", async (req, res) => {
   if (req.query.search) {
@@ -51,24 +55,30 @@ router.get("/:id", blogFinder, async (req, res) => {
   }
 })
 
-router.post("/", tokenExtractor, async (req, res) => {
+router.post("/", tokenExtractor, activeSession, async (req, res) => {
   const user = await User.findByPk(req.decodedToken.id)
   const blog = await Blog.create({ ...req.body, userId: user.id })
   return res.json(blog)
 })
 
-router.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id)
-  if (req.blog.userId !== user.id) {
-    return res.status(401).json({
-      error: "Only the creator can delete a blog",
-    })
+router.delete(
+  "/:id",
+  tokenExtractor,
+  activeSession,
+  blogFinder,
+  async (req, res) => {
+    const user = await User.findByPk(req.decodedToken.id)
+    if (req.blog.userId !== user.id) {
+      return res.status(401).json({
+        error: "Only the creator can delete a blog",
+      })
+    }
+    if (req.blog) {
+      await req.blog.destroy()
+    }
+    res.status(204).end()
   }
-  if (req.blog) {
-    await req.blog.destroy()
-  }
-  res.status(204).end()
-})
+)
 
 router.put("/:id", blogFinder, async (req, res) => {
   if (req.blog) {

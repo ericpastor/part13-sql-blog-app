@@ -7,7 +7,7 @@
 .text
 .dockerignore
 Dockerfile
-
+.env
 # testing
 /coverage
 
